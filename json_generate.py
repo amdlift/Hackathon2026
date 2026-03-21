@@ -9,3 +9,6 @@ for lot in data["parking_lots"]:
 
 output = json.dumps(data, indent=2)
 print(output)
+
+with open("data.json", "w") as file:
+    json.dump(data, file, indent=2)
