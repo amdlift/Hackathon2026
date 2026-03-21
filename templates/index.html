@@ -1,33 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UAH Parking Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 </head>
+
 <body>
 
-<header>
-  <div class="logo-block">
-    <h1>UAH PARKING</h1>
-    <p>Campus Lot Availability Dashboard</p>
-  </div>
-  <div class="live-badge">
-    <div class="live-dot"></div>
-    Live Data via Flask API
-  </div>
-</header>
+  <header>
+    <div class="logo-block">
+      <h1>UAH PARKING</h1>
+      <p>Campus Lot Availability Dashboard</p>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      Live Data via Flask API
+    </div>
+  </header>
 
-<div class="summary">
-  <div class="summary-item">
-    <div class="label">Total Lots</div>
-    <div class="value good" id="total-lots">—</div>
+  <div class="summary">
+    <div class="summary-item">
+      <div class="label">Total Lots</div>
+      <div class="value good" id="total-lots">—</div>
+    </div>
+    <div class="summary-item">
+      <div class="label">Available Spots</div>
+      <div class="value good" id="total-available">—</div>
+    </div>
+    <div class="summary-item">
+      <div class="label">Total Capacity</div>
+      <div class="value" id="total-capacity" style="color:var(--accent)">—</div>
+    </div>
   </div>
-  <div class="summary-item">
-    <div class="label">Available Spots</div>
-    <div class="value good" id="total-available">—</div>
+
+  <div class="lots-grid" id="lots-grid">
+    <div class="loading">Loading parking data...</div>
   </div>
   <div class="summary-item">
     <div class="label">Total Capacity</div>
@@ -146,4 +159,5 @@
 </script>
 
 </body>
+
 </html>
