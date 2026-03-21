@@ -359,66 +359,62 @@
     return "good";
   }
 
-  function renderLots() {
+  async function renderLots() {
+    const res = await fetch("http://127.0.0.1:5000/api/lots");
+    const data = await res.json();
     const grid = document.getElementById("lots-grid");
     grid.innerHTML = "";
 
     let totalAvailable = 0;
     let totalCapacity = 0;
 
-    lots.forEach((lot, i) => {
-      const occ = randomOccupancy(lot.capacity);
-      const avail = lot.capacity - occ;
-      const pct = getPct(occ, lot.capacity);
-      totalAvailable += avail;
-      totalCapacity += lot.capacity;
+    Object.entries(data).forEach(([id, lot], i) => {
+        const pct = Math.round((lot.occupancy / lot.capacity) * 100);
+        totalAvailable += lot.available;
+        totalCapacity += lot.capacity;
 
-      const card = document.createElement("div");
-      card.className = "lot-card";
-      card.style.animationDelay = `${i * 0.07}s`;
-
-      card.innerHTML = `
-        <div class="lot-header">
-          <div>
-            <div class="lot-id">${lot.id}</div>
-            <div class="lot-name">${lot.name}</div>
-          </div>
-          <span class="status-chip ${getStatusClass(pct)}">${getStatusLabel(pct)}</span>
-        </div>
-        <div class="progress-section">
-          <div class="progress-labels">
-            <span>Occupancy</span>
-            <span>${pct}%</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill ${getFillClass(pct)}" style="width: ${pct}%"></div>
-          </div>
-        </div>
-        <div class="stats-row">
-          <div class="stat-box">
-            <div class="stat-label">Available</div>
-            <div class="stat-value ${getValueClass(pct)}">${avail}</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-label">Max Capacity</div>
-            <div class="stat-value" style="color:var(--accent)">${lot.capacity}</div>
-          </div>
-        </div>
-      `;
-      grid.appendChild(card);
+        const card = document.createElement("div");
+        card.className = "lot-card";
+        card.style.animationDelay = `${i * 0.07}s`;
+        card.innerHTML = `
+            <div class="lot-header">
+                <div>
+                    <div class="lot-id">${id}</div>
+                    <div class="lot-name">${lot.name}</div>
+                </div>
+                <span class="status-chip ${getStatusClass(pct)}">${getStatusLabel(pct)}</span>
+            </div>
+            <div class="progress-section">
+                <div class="progress-labels">
+                    <span>Occupancy</span><span>${pct}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill ${getFillClass(pct)}" style="width:${pct}%"></div>
+                </div>
+            </div>
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-label">Available</div>
+                    <div class="stat-value ${getValueClass(pct)}">${lot.available}</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Max Capacity</div>
+                    <div class="stat-value" style="color:var(--accent)">${lot.capacity}</div>
+                </div>
+            </div>
+        `;
+        grid.appendChild(card);
     });
 
-    document.getElementById("total-lots").textContent = lots.length;
+    document.getElementById("total-lots").textContent = Object.keys(data).length;
     document.getElementById("total-available").textContent = totalAvailable;
     document.getElementById("total-capacity").textContent = totalCapacity;
-
-    const now = new Date();
     document.getElementById("last-updated").textContent =
-      now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  }
+        new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
 
   renderLots();
-  setInterval(renderLots, 10000); // refresh every 10 seconds
+  //setInterval(renderLots, 10000); // refresh every 10 seconds
 </script>
 </body>
 </html>
