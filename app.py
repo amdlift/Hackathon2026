@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Load parking lot data
 def load_parking_data():
     try:
-        with open('process_data.json', 'r') as file:
+        with open('processed_data.json', 'r') as file:
             data = json.load(file)
         return data['parking_lots']
     except FileNotFoundError:
@@ -55,7 +55,7 @@ def index():
 @app.route('/api/parking-data')
 def get_parking_data():
     """API endpoint to get current parking lot data"""
-    with open('process_data.json', 'r') as processed_file:
+    with open('processed_data.json', 'r') as processed_file:
         lots = json.loads(processed_file)
     
     # Calculate summary statistics
