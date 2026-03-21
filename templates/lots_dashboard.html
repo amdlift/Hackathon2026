@@ -1,0 +1,90 @@
+{% extends "index.html" %}
+
+{% block title %}UAH Parking Dashboard{% endblock %}
+
+{% block head %}
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+  <header>
+    <div class="logo-block">
+      <h1>UAH PARKING</h1>
+      <p>Campus Lot Availability Dashboard</p>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      Live Data via Flask API
+    </div>
+  </header>
+
+  <div class="summary">
+    <div class="summary-item">
+      <div class="label">Total Lots</div>
+      <div class="value good" id="total-lots">{{ lots|length if lots else '—' }}</div>
+    </div>
+    <div class="summary-item">
+      <div class="label">Available Spots</div>
+      <div class="value good" id="total-available">
+        {% set total_avail = lots|sum(attribute='available') if lots else 0 %}
+        {{ total_avail if lots else '—' }}
+      </div>
+    </div>
+    <div class="summary-item">
+      <div class="label">Total Capacity</div>
+      <div class="value" id="total-capacity" style="color:var(--accent)">
+        {% set total_cap = lots|sum(attribute='capacity') if lots else 0 %}
+        {{ total_cap if lots else '—' }}
+      </div>
+    </div>
+  </div>
+
+  <div class="lots-grid" id="lots-grid">
+    {% if lots %}
+      {% for lot in lots %}
+        {% set pct = (lot.occupancy / lot.capacity * 100) | round(0) if lot.capacity > 0 else 0 %}
+        {% set fill_class = 'fill-danger' if pct >= 95 else 'fill-warn' if pct >= 70 else 'fill-good' %}
+        {% set value_class = 'bad' if pct >= 95 else 'warn' if pct >= 70 else 'good' %}
+        {% set status = 'full' if pct >= 95 else 'busy' if pct >= 70 else 'open' %}
+
+        <div class="lot-card" data-lot-id="{{ lot.id }}">
+          <div class="lot-header">
+            <div>
+              <div class="lot-id">{{ lot.id }}</div>
+              <div class="lot-name">{{ lot.name }}</div>
+            </div>
+            <span class="status-chip {{ status }}">{{ 'Full' if status=='full' else 'Busy' if status=='busy' else 'Open' }}</span>
+          </div>
+          <div class="progress-section">
+            <div class="progress-labels">
+              <span>Occupancy</span>
+              <span class="occupancy-percent">{{ pct }}%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill {{ fill_class }}" style="width: {{ pct }}%"></div>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="stat-label">Available</div>
+              <div class="stat-value available-value {{ value_class }}">{{ lot.available }}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Max Capacity</div>
+              <div class="stat-value capacity-value" style="color:var(--accent)">{{ lot.capacity }}</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="loading">No parking lots found. Run <code>flask seed-lots</code> to add some!</div>
+    {% endif %}
+  </div>
+
+  <footer>
+    <span>UAH HACKATHON 2026 — PARKING DASHBOARD (Flask Version)</span>
+    <span>Last updated: <span id="last-updated">{{ now }}</span></span>
+  </footer>
+
+{% endblock %}

@@ -13,6 +13,8 @@ pkgs.mkShell {
       python-pkgs: with python-pkgs; [
         # select Python packages here
         flask
+        sqlalchemy
+        flask_sqlalchemy
       ]
     ))
   ];
