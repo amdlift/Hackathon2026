@@ -56,12 +56,12 @@ def index():
 def get_parking_data():
     """API endpoint to get current parking lot data"""
     with open('processed_data.json', 'r') as processed_file:
-        lots = json.loads(processed_file)
+        lots = json.load(processed_file)
     
     # Calculate summary statistics
     total_lots = len(lots)
-    total_available = sum(lots['available_spaces'] for lot in lots)
-    total_capacity = sum(lots['total_capacity'] for lot in lots)
+    total_available = sum(lot['available'] for lot in lots)
+    total_capacity = sum(lot['capacity'] for lot in lots)
     last_updated = datetime.now().strftime('%H:%M:%S')
     
     return jsonify({

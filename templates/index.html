@@ -45,15 +45,6 @@
 </footer>
 
 <script>
-  // Utility functions
-  function getStatusLabel(status) {
-    switch(status) {
-      case 'full': return 'Full';
-      case 'busy': return 'Busy';
-      default: return 'Open';
-    }
-  }
-
   function getFillClass(pct) {
     if (pct >= 95) return "fill-danger";
     if (pct >= 70) return "fill-warn";
@@ -66,61 +57,55 @@
     return "good";
   }
 
-  // Fetch parking data from Flask API
   async function fetchParkingData() {
-    try {
-      const response = await fetch('/api/parking-data');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching parking data:', error);
-      throw error;
+    const response = await fetch('/api/parking-data');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    return await response.json();
   }
 
-  // Render lots with data from Flask backend
   async function renderLots() {
     const grid = document.getElementById("lots-grid");
-    
+
     try {
       const data = await fetchParkingData();
       const { lots, summary } = data;
-      
-      // Clear loading state
+
       grid.innerHTML = "";
 
-      // Render each lot card
       lots.forEach((lot, i) => {
+        const pct = Math.min(100, Math.max(0, Math.round((lot.percent_full || 0) * 100)));
+
         const card = document.createElement("div");
         card.className = "lot-card";
         card.style.animationDelay = `${i * 0.07}s`;
 
-        const lotName = lot.name || `${lot.lot}`;
-        
+        const lotName = lot.lot_name || lot.lot_id;
+
         card.innerHTML = `
           <div class="lot-header">
             <div>
-              <div class="lot-id">${lot.lot}</div>
+              <div class="lot-id">${lot.lot_id}</div>
               <div class="lot-name">${lotName}</div>
             </div>
-            <span class="status-chip ${lot.status}">${getStatusLabel(lot.status)}</span>
+            <span class="status-chip">${lot.status}</span>
           </div>
+
           <div class="progress-section">
             <div class="progress-labels">
               <span>Occupancy</span>
-              <span>${lot.occupancy_pct}%</span>
+              <span>${pct}%</span>
             </div>
             <div class="progress-bar">
-              <div class="progress-fill ${getFillClass(lot.occupancy_pct)}" style="width: ${lot.occupancy_pct}%"></div>
+              <div class="progress-fill ${getFillClass(pct)}" style="width: ${pct}%"></div>
             </div>
           </div>
+
           <div class="stats-row">
             <div class="stat-box">
               <div class="stat-label">Available</div>
-              <div class="stat-value ${getValueClass(lot.occupancy_pct)}">${lot.available}</div>
+              <div class="stat-value ${getValueClass(pct)}">${lot.available}</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">Max Capacity</div>
@@ -128,18 +113,18 @@
             </div>
           </div>
         `;
+
         grid.appendChild(card);
       });
 
-      // Update summary
+      // Summary (from backend)
       document.getElementById("total-lots").textContent = summary.total_lots;
       document.getElementById("total-available").textContent = summary.total_available;
       document.getElementById("total-capacity").textContent = summary.total_capacity;
       document.getElementById("last-updated").textContent = summary.last_updated;
 
     } catch (error) {
-      // Show error state
-      grid.innerHTML = `
+      document.getElementById("lots-grid").innerHTML = `
         <div class="error">
           <strong>Error loading parking data:</strong><br>
           ${error.message}<br>
@@ -149,13 +134,9 @@
     }
   }
 
-  // Initialize dashboard
   renderLots();
-  
-  // Refresh every 10 seconds
   setInterval(renderLots, 10000);
-  
-  // Manual refresh on click (for development)
+
   document.addEventListener('keydown', (e) => {
     if (e.code === 'KeyR' && e.ctrlKey) {
       e.preventDefault();
@@ -163,5 +144,6 @@
     }
   });
 </script>
+
 </body>
 </html>
