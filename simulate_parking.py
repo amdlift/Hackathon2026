@@ -72,7 +72,9 @@ def simulate_step():
         change = random.randint(MIN_CHANGE, MAX_CHANGE)
 
         # Apply time-of-day bias
-        change += random.randint(-1, bias + 1)  # soft bias
+        low = min(-1, bias + 1)
+        high = max(-1, bias + 1)
+        change += random.randint(low, high)
 
         # Occasional big jump (event starting/ending, bus arrival, etc.)
         if random.random() < BIG_JUMP_CHANCE:
