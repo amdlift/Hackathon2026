@@ -44,7 +44,7 @@ def process_parking_data(data):
 
 
 def main():
-    
+    print("update loop is running")
     while True:
         data = update_json()
 
@@ -58,6 +58,3 @@ def main():
         # print("------------------------------------")
 
         time.sleep(1)
-
-if __name__ == '__main__':
-    main()
