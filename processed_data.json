@@ -1,0 +1,11 @@
+[
+  {
+    "lot_id": "SLL",
+    "lot_name": "Shelby Lake Lot",
+    "capacity": 5,
+    "occupied": 0,
+    "available": 5,
+    "percent_full": 0.0,
+    "status": "Open"
+  }
+]

@@ -318,23 +318,6 @@
 </footer>
 
 <script>
-  const lots = [
-    { id: "W27",  name: "West Lot 27",             capacity: 300 },
-    { id: "CGP",  name: "Charger Park Garage",      capacity: 450 },
-    { id: "E10",  name: "East Lot 10",              capacity: 180 },
-    { id: "N5",   name: "North Lot 5",              capacity: 120 },
-    { id: "S14",  name: "South Engineering Lot",    capacity: 200 },
-    { id: "UC3",  name: "Union Center Lot 3",       capacity: 90  },
-  ];
-
-  function randomOccupancy(capacity) {
-    return Math.floor(Math.random() * (capacity + 1));
-  }
-
-  function getPct(occ, cap) {
-    return Math.round((occ / cap) * 100);
-  }
-
   function getStatusClass(pct) {
     if (pct >= 95) return "full";
     if (pct >= 70) return "busy";
@@ -360,7 +343,7 @@
   }
 
   async function renderLots() {
-    const res = await fetch("http://127.0.0.1:5000/api/lots");
+    const res = await fetch("/api/parking-data");
     const data = await res.json();
     const grid = document.getElementById("lots-grid");
     grid.innerHTML = "";
@@ -368,8 +351,8 @@
     let totalAvailable = 0;
     let totalCapacity = 0;
 
-    Object.entries(data).forEach(([id, lot], i) => {
-        const pct = Math.round((lot.occupancy / lot.capacity) * 100);
+    data.lots.forEach((lot, i) => {
+        const pct = Math.round(lot.percent_full * 100);
         totalAvailable += lot.available;
         totalCapacity += lot.capacity;
 
@@ -379,8 +362,8 @@
         card.innerHTML = `
             <div class="lot-header">
                 <div>
-                    <div class="lot-id">${id}</div>
-                    <div class="lot-name">${lot.name}</div>
+                    <div class="lot-id">${lot.lot_id}</div>
+                    <div class="lot-name">${lot.lot_name}</div>
                 </div>
                 <span class="status-chip ${getStatusClass(pct)}">${getStatusLabel(pct)}</span>
             </div>
@@ -406,15 +389,14 @@
         grid.appendChild(card);
     });
 
-    document.getElementById("total-lots").textContent = Object.keys(data).length;
-    document.getElementById("total-available").textContent = totalAvailable;
-    document.getElementById("total-capacity").textContent = totalCapacity;
-    document.getElementById("last-updated").textContent =
-        new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-}
+    document.getElementById("total-lots").textContent = data.summary.total_lots;
+    document.getElementById("total-available").textContent = data.summary.total_available;
+    document.getElementById("total-capacity").textContent = data.summary.total_capacity;
+    document.getElementById("last-updated").textContent = data.summary.last_updated;
+  }
 
   renderLots();
-  //setInterval(renderLots, 10000); // refresh every 10 seconds
+  setInterval(renderLots, 10000);
 </script>
 </body>
 </html>

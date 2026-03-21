@@ -1,0 +1,9 @@
+{
+  "parking_lots": [
+    {
+      "lot": "SLL",
+      "name": "Shelby Lake Lot",
+      "capacity": 5
+    }
+  ]
+}
