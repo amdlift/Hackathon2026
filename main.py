@@ -48,9 +48,13 @@ def process_parking_data(data):
 def main():
     
     while True:
-        data = update_json()
 
-        
+        # real counts only for lots that currently have cameras
+        lot_counts = get_lot_counts()
+
+        # hybrid fill: real counts where available, random elsewhere
+        data = update_json(lot_counts)
+
         results = process_parking_data(data)
 
         write_json_atomic("processed_data.json", results)
