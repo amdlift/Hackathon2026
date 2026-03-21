@@ -3,8 +3,6 @@ import time
 import os
 from json_generate import update_json
 
-
-
 def get_status(percent_full):
     if percent_full >= 1:
         return "Full"
@@ -47,20 +45,17 @@ def process_parking_data(data):
 
 
 def main():
-    
+    print("update loop is running")
     while True:
         data = update_json()
 
-        
         results = process_parking_data(data)
 
         write_json_atomic("processed_data.json", results)
 
-        for lot in results:
-            print(lot)
+        # for lot in results:
+        #     print(lot)
 
-        print("------------------------------------")
+        # print("------------------------------------")
 
-        time.sleep(5)
-
-main()
+        time.sleep(1)
