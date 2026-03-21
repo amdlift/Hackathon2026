@@ -1,167 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UAH Parking Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 </head>
+
 <body>
 
-<header>
-  <div class="logo-block">
-    <h1>UAH PARKING</h1>
-    <p>Campus Lot Availability Dashboard</p>
+  <header>
+    <div class="logo-block">
+      <h1>UAH PARKING</h1>
+      <p>Campus Lot Availability Dashboard</p>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      Live Data via Flask API
+    </div>
+  </header>
+
+  <div class="summary">
+    <div class="summary-item">
+      <div class="label">Total Lots</div>
+      <div class="value good" id="total-lots">—</div>
+    </div>
+    <div class="summary-item">
+      <div class="label">Available Spots</div>
+      <div class="value good" id="total-available">—</div>
+    </div>
+    <div class="summary-item">
+      <div class="label">Total Capacity</div>
+      <div class="value" id="total-capacity" style="color:var(--accent)">—</div>
+    </div>
   </div>
-  <div class="live-badge">
-    <div class="live-dot"></div>
-    Live Data via Flask API
+
+  <div class="lots-grid" id="lots-grid">
+    <div class="loading">Loading parking data...</div>
   </div>
-</header>
 
-<div class="summary">
-  <div class="summary-item">
-    <div class="label">Total Lots</div>
-    <div class="value good" id="total-lots">—</div>
-  </div>
-  <div class="summary-item">
-    <div class="label">Available Spots</div>
-    <div class="value good" id="total-available">—</div>
-  </div>
-  <div class="summary-item">
-    <div class="label">Total Capacity</div>
-    <div class="value" id="total-capacity" style="color:var(--accent)">—</div>
-  </div>
-</div>
+  <footer>
+    <span>UAH HACKATHON 2026 &mdash; PARKING DASHBOARD (Flask Version)</span>
+    <span>Last updated: <span id="last-updated">—</span></span>
+  </footer>
 
-<div class="lots-grid" id="lots-grid">
-  <div class="loading">Loading parking data...</div>
-</div>
-
-<footer>
-  <span>UAH HACKATHON 2026 &mdash; PARKING DASHBOARD (Flask Version)</span>
-  <span>Last updated: <span id="last-updated">—</span></span>
-</footer>
-
-<script>
-  // Utility functions
-  function getStatusLabel(status) {
-    switch(status) {
-      case 'full': return 'Full';
-      case 'busy': return 'Busy';
-      default: return 'Open';
-    }
-  }
-
-  function getFillClass(pct) {
-    if (pct >= 95) return "fill-danger";
-    if (pct >= 70) return "fill-warn";
-    return "fill-good";
-  }
-
-  function getValueClass(pct) {
-    if (pct >= 95) return "bad";
-    if (pct >= 70) return "warn";
-    return "good";
-  }
-
-  // Fetch parking data from Flask API
-  async function fetchParkingData() {
-    try {
-      const response = await fetch('/api/parking-data');
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching parking data:', error);
-      throw error;
-    }
-  }
-
-  // Render lots with data from Flask backend
-  async function renderLots() {
-    const grid = document.getElementById("lots-grid");
-    
-    try {
-      const data = await fetchParkingData();
-      const { lots, summary } = data;
-      
-      // Clear loading state
-      grid.innerHTML = "";
-
-      // Render each lot card
-      lots.forEach((lot, i) => {
-        const card = document.createElement("div");
-        card.className = "lot-card";
-        card.style.animationDelay = `${i * 0.07}s`;
-
-        const lotName = lot.name || `${lot.lot}`;
-        
-        card.innerHTML = `
-          <div class="lot-header">
-            <div>
-              <div class="lot-id">${lot.lot}</div>
-              <div class="lot-name">${lotName}</div>
-            </div>
-            <span class="status-chip ${lot.status}">${getStatusLabel(lot.status)}</span>
-          </div>
-          <div class="progress-section">
-            <div class="progress-labels">
-              <span>Occupancy</span>
-              <span>${lot.occupancy_pct}%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill ${getFillClass(lot.occupancy_pct)}" style="width: ${lot.occupancy_pct}%"></div>
-            </div>
-          </div>
-          <div class="stats-row">
-            <div class="stat-box">
-              <div class="stat-label">Available</div>
-              <div class="stat-value ${getValueClass(lot.occupancy_pct)}">${lot.available}</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">Max Capacity</div>
-              <div class="stat-value" style="color:var(--accent)">${lot.capacity}</div>
-            </div>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-
-      // Update summary
-      document.getElementById("total-lots").textContent = summary.total_lots;
-      document.getElementById("total-available").textContent = summary.total_available;
-      document.getElementById("total-capacity").textContent = summary.total_capacity;
-      document.getElementById("last-updated").textContent = summary.last_updated;
-
-    } catch (error) {
-      // Show error state
-      grid.innerHTML = `
-        <div class="error">
-          <strong>Error loading parking data:</strong><br>
-          ${error.message}<br>
-          <small>Make sure the Flask server is running.</small>
-        </div>
-      `;
-    }
-  }
-
-  // Initialize dashboard
-  renderLots();
-  
-  // Refresh every 10 seconds
-  setInterval(renderLots, 10000);
-  
-  // Manual refresh on click (for development)
-  document.addEventListener('keydown', (e) => {
-    if (e.code === 'KeyR' && e.ctrlKey) {
-      e.preventDefault();
-      renderLots();
-    }
-  });
-</script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>
