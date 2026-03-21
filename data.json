@@ -1,0 +1,24 @@
+{
+  "parking_lots": [
+    {
+      "lot": "IMF",
+      "capacity": 300,
+      "occupancy": 28
+    },
+    {
+      "lot": "G15",
+      "capacity": 150,
+      "occupancy": 144
+    },
+    {
+      "lot": "G17",
+      "capacity": 150,
+      "occupancy": 103
+    },
+    {
+      "lot": "W21",
+      "capacity": 130,
+      "occupancy": 112
+    }
+  ]
+}

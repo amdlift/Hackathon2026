@@ -1,11 +1,11 @@
 import json
 import random
 
-with open('lot_data.json', 'r') as file:
-    data = json.load(file)
+def update_json(original_json: str = 'lot_data.json', dest_json: str = 'data.json'):
+    with open(original_json, 'r') as file:
+        data = json.load(file)
 
-for lot in data["parking_lots"]:
-    lot["occupancy"] = random.randrange(0, lot["capacity"])
+    for lot in data["parking_lots"]:
+        lot["occupancy"] = random.randrange(0, lot["capacity"])
 
-output = json.dumps(data, indent=2)
-print(output)
+    return data

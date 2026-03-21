@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Load parking lot data
 def load_parking_data():
     try:
-        with open('lot_data.json', 'r') as file:
+        with open('processed_data.json', 'r') as file:
             data = json.load(file)
         return data['parking_lots']
     except FileNotFoundError:
@@ -22,30 +22,30 @@ def load_parking_data():
             {"lot": "UC3", "name": "Union Center Lot 3", "capacity": 90},
         ]
 
-def generate_occupancy_data():
-    """Generate random occupancy data for all parking lots"""
-    lots = load_parking_data()
+# def generate_occupancy_data():
+#     """Generate random occupancy data for all parking lots"""
+#     lots = load_parking_data()
     
-    for lot in lots:
-        # Generate random occupancy (0 to capacity)
-        occupancy = random.randint(0, lot['capacity'])
-        available = lot['capacity'] - occupancy
-        occupancy_pct = round((occupancy / lot['capacity']) * 100)
+#     for lot in lots:
+#         # Generate random occupancy (0 to capacity)
+#         occupancy = random.randint(0, lot['capacity'])
+#         available = lot['capacity'] - occupancy
+#         occupancy_pct = round((occupancy / lot['capacity']) * 100)
         
-        # Add calculated fields
-        lot['occupancy'] = occupancy
-        lot['available'] = available
-        lot['occupancy_pct'] = occupancy_pct
+#         # Add calculated fields
+#         lot['occupancy'] = occupancy
+#         lot['available'] = available
+#         lot['occupancy_pct'] = occupancy_pct
         
-        # Determine status
-        if occupancy_pct >= 95:
-            lot['status'] = 'full'
-        elif occupancy_pct >= 70:
-            lot['status'] = 'busy'
-        else:
-            lot['status'] = 'open'
+#         # Determine status
+#         if occupancy_pct >= 95:
+#             lot['status'] = 'full'
+#         elif occupancy_pct >= 70:
+#             lot['status'] = 'busy'
+#         else:
+#             lot['status'] = 'open'
     
-    return lots
+#     return lots
 
 @app.route('/')
 def index():
@@ -55,7 +55,8 @@ def index():
 @app.route('/api/parking-data')
 def get_parking_data():
     """API endpoint to get current parking lot data"""
-    lots = generate_occupancy_data()
+    with open('processed_data.json', 'r') as processed_file:
+        lots = json.load(processed_file)
     
     # Calculate summary statistics
     total_lots = len(lots)
