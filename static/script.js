@@ -86,7 +86,6 @@ function createCards() {
 
 // Update existing cards with new data (called on each refresh)
 async function updateCards() {
-    console.log("updating cards")
     const grid = document.getElementById("lots-grid");
 
     try {

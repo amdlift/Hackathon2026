@@ -26,7 +26,6 @@ def process_parking_data(data):
         lot_name = entry["lot"]
         occupied = entry["occupancy"]
         capacity = entry["capacity"]
-        capacity += x
 
         available = max(capacity - occupied, 0)
         percent_full = (occupied / capacity)
@@ -45,11 +44,8 @@ def process_parking_data(data):
 
 
 def main():
-    global x
-    x = 0
     
     while True:
-        x += 1
         data = update_json()
 
         results = process_parking_data(data)
