@@ -6,12 +6,12 @@ model = YOLO("yolov8n.pt")
 
 TOTAL_SPOTS = 5
 
-# Define your parking lot zone (x1, y1, x2, y2)
-# These are pixel coordinates - we'll adjust them in a moment
+
+# Pixel Coords
 ROI_X1, ROI_Y1 = 500, 500  # top left corner
 ROI_X2, ROI_Y2 = 1000, 1000  # bottom right corner
 
-cap = cv2.VideoCapture(1)  # your phone camera index
+cap = cv2.VideoCapture(1)  # phone camera index
 
 print("Press Q to quit, press S to print current ROI coordinates")
 
