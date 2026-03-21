@@ -1,0 +1,12 @@
+.progress-bar {
+  transition: width 0.6s ease;  /* smooth if you later add live updates */
+}
+
+.card {
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
+}

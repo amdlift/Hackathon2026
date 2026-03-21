@@ -1,0 +1,54 @@
+{% extends "index.html" %}
+
+{% block title %}Live Parking Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="lots-container">
+  <!-- Fallback content: rendered by Jinja on initial page load -->
+  {% for lot in lots %}
+    <div class="col">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title fw-bold">{{ lot.name }}</h5>
+
+          <div class="mb-3">
+            <div class="d-flex justify-content-between mb-1 small">
+              <span>Occupied: <strong>{{ lot.occupancy }}</strong></span>
+              <span>Available: <strong>{{ lot.available }}</strong></span>
+            </div>
+
+            {% set percent = (lot.occupancy / lot.capacity * 100) | round(0) if lot.capacity > 0 else 0 %}
+            {% set bar_class = 'bg-success' if percent < 60 else 'bg-warning' if percent <= 85 else 'bg-danger' %}
+
+            <div class="progress" role="progressbar" aria-label="Occupancy" 
+                 aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100" style="height: 1.5rem;">
+              <div class="progress-bar {{ bar_class }} fw-bold" style="width: {{ percent }}%">
+                {{ percent }}%
+              </div>
+            </div>
+          </div>
+
+          <div class="text-muted small">
+            Capacity: {{ lot.capacity }} spaces
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="col-12">
+      <div class="alert alert-info text-center">
+        No parking lots found. Try running <code>flask seed-lots</code>!
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="text-center mt-5">
+  <small class="text-muted">
+    Auto-updates every 20 seconds • Last updated: 
+    <span id="last-updated">{{ now }}</span>
+  </small>
+</div>
+
+{% endblock %}
