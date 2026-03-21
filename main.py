@@ -30,7 +30,7 @@ def process_parking_data(data):
         capacity = entry["capacity"]
 
         available = max(capacity - occupied, 0)
-        percent_full = (occupied / capacity) if capacity > 0 else 0
+        percent_full = (occupied / capacity) if capacity 
 
         processed.append({
             "lot_id": lot_name,
