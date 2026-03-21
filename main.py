@@ -1,5 +1,8 @@
 import json
+import time
+import os
 from json_generate import update_json
+
 
 
 def get_status(percent_full):
@@ -10,6 +13,13 @@ def get_status(percent_full):
     else:
         return "Open"
 
+def write_json_atomic(filename, data):
+    temp_filename = filename + ".tmp"
+
+    with open(temp_filename, "w") as file:
+        json.dump(data, file, indent=2)
+
+    os.replace(temp_filename, filename)
 
 def process_parking_data(data):
     processed = []
@@ -37,17 +47,19 @@ def process_parking_data(data):
 
 def main():
     
-    data = update_json()
+    while True:
+        data = update_json()
 
-    
-    results = process_parking_data(data)
+        
+        results = process_parking_data(data)
 
-    with open("processed_data.json", "w") as file:
-        json.dump(results, file, indent=2)
+        write_json_atomic("processed_data.json", data)
 
-    # 🖥 print
-    for lot in results:
-        print(lot)
+        for lot in results:
+            print(lot)
 
+        print("------------------------------------")
+
+        time.sleep(30)
 
 main()
