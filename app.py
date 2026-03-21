@@ -2,6 +2,8 @@ from flask import Flask, render_template, jsonify
 import json
 import random
 from datetime import datetime
+import threading
+from update_loop import main as update_loop_main
 
 app = Flask(__name__)
 
@@ -75,4 +77,9 @@ def get_parking_data():
     })
 
 if __name__ == '__main__':
+    # Start the update loop in a separate daemon thread
+    update_thread = threading.Thread(target=update_loop_main, daemon=True)
+    update_thread.start()
+    
+    # Start the Flask app
     app.run(debug=True, host='0.0.0.0', port=5000)
