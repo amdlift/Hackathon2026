@@ -6,9 +6,9 @@ from json_generate import update_json
 
 
 def get_status(percent_full):
-    if percent_full >= 1:
+    if percent_full >= 100:
         return "Full"
-    elif percent_full >= 0.90:
+    elif percent_full >= 90:
         return "Nearly Full"
     else:
         return "Open"
@@ -30,7 +30,7 @@ def process_parking_data(data):
         capacity = entry["capacity"]
 
         available = max(capacity - occupied, 0)
-        percent_full = (occupied / capacity) if capacity 
+        percent_full = (occupied / capacity) * 100 
 
         processed.append({
             "lot_id": lot_name,
