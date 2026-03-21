@@ -1,20 +1,34 @@
 {
   "parking_lots": [
     {
-      "lot": "IMF",
+      "lot": "W27",
+      "name": "West Lot 27",
       "capacity": 300
     },
     {
-      "lot": "G15",
-      "capacity": 150
+      "lot": "CGP",
+      "name": "Charger Park Garage",
+      "capacity": 450
     },
     {
-      "lot": "G17",
-      "capacity": 150
+      "lot": "E10",
+      "name": "East Lot 10",
+      "capacity": 180
     },
     {
-      "lot": "W21",
-      "capacity": 130
+      "lot": "N5",
+      "name": "North Lot 5",
+      "capacity": 120
+    },
+    {
+      "lot": "S14",
+      "name": "South Engineering Lot",
+      "capacity": 200
+    },
+    {
+      "lot": "UC3",
+      "name": "Union Center Lot 3",
+      "capacity": 90
     }
   ]
 }
