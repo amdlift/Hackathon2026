@@ -42,7 +42,6 @@ def main():
     
     results = process_parking_data(data)
 
-    # 💾 save for frontend
     with open("processed_data.json", "w") as file:
         json.dump(results, file, indent=2)
 
