@@ -6,9 +6,9 @@ from json_generate import update_json
 
 
 def get_status(percent_full):
-    if percent_full >= 100:
+    if percent_full >= 1:
         return "Full"
-    elif percent_full >= 90:
+    elif percent_full >= .9:
         return "Nearly Full"
     else:
         return "Open"
@@ -30,7 +30,7 @@ def process_parking_data(data):
         capacity = entry["capacity"]
 
         available = max(capacity - occupied, 0)
-        percent_full = (occupied / capacity) * 100 
+        percent_full = (occupied / capacity)
 
         processed.append({
             "lot_id": lot_name,
@@ -53,13 +53,13 @@ def main():
         
         results = process_parking_data(data)
 
-        write_json_atomic("processed_data.json", data)
+        write_json_atomic("processed_data.json", results)
 
         for lot in results:
             print(lot)
 
         print("------------------------------------")
 
-        time.sleep(30)
+        time.sleep(5)
 
 main()
