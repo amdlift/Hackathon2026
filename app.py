@@ -1,18 +1,20 @@
-from flask import Flask, jsonify
-from flask_cors import CORS
+from flask import Flask, jsonify, send_from_directory
 import random
 
 app = Flask(__name__)
-CORS(app)
 
 lots = {
-    "W27": {"name": "West Lot 27",             "capacity": 300},
-    "CGP": {"name": "Charger Park Garage",      "capacity": 450},
-    "E10": {"name": "East Lot 10",              "capacity": 180},
-    "N5":  {"name": "North Lot 5",              "capacity": 120},
-    "S14": {"name": "South Engineering Lot",    "capacity": 200},
-    "UC3": {"name": "Union Center Lot 3",       "capacity": 90},
+    "W27": {"name": "West Lot 27",          "capacity": 300},
+    "CGP": {"name": "Charger Park Garage",   "capacity": 450},
+    "E10": {"name": "East Lot 10",           "capacity": 180},
+    "N5":  {"name": "North Lot 5",           "capacity": 120},
+    "S14": {"name": "South Engineering Lot", "capacity": 200},
+    "UC3": {"name": "Union Center Lot 3",    "capacity": 90},
 }
+
+@app.route("/")
+def index():
+    return send_from_directory(".", "index.html")
 
 @app.route("/api/lots")
 def get_lots():
