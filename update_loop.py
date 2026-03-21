@@ -23,7 +23,8 @@ def process_parking_data(data):
     processed = []
 
     for entry in data["parking_lots"]:
-        lot_name = entry["lot"]
+        lot_id = entry["lot"]
+        lot_name = entry["name"]
         occupied = entry["occupancy"]
         capacity = entry["capacity"]
 
@@ -31,7 +32,7 @@ def process_parking_data(data):
         percent_full = (occupied / capacity)
 
         processed.append({
-            "lot_id": lot_name,
+            "lot_id": lot_id,
             "lot_name": lot_name,            
             "capacity": capacity,
             "occupied": occupied,
