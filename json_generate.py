@@ -1,10 +1,11 @@
 import json
+import random
 
 with open('lot_data.json', 'r') as file:
     data = json.load(file)
 
 for lot in data["parking_lots"]:
-    lot["occupancy"] = 20
+    lot["occupancy"] = random.randrange(0, lot["capacity"])
 
 output = json.dumps(data, indent=2)
 print(output)
