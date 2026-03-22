@@ -11,31 +11,31 @@
   <header>
     <div class="logo-block">
       <h1>UAH PARKING</h1>
-      <p>Campus Lot Availability Dashboard</p>
+      <p>Availability Dashboard</p>
     </div>
     <div class="live-badge">
       <div class="live-dot"></div>
-      Live Data via Flask API
+      Live
     </div>
   </header>
 
   <div class="summary">
     <div class="summary-item">
-      <div class="label">Total Lots</div>
+      <div class="label">Lots</div>
       <div class="value good" id="total-lots">{{ lots|length if lots else '—' }}</div>
     </div>
     <div class="summary-item">
-      <div class="label">Available Spots</div>
-      <div class="value good" id="total-available">
-        {% set total_avail = lots|sum(attribute='available') if lots else 0 %}
-        {{ total_avail if lots else '—' }}
+      <div class="label">Capacity</div>
+      <div class="value good" id="total-capacity">
+        {% set total_cap = lots|sum(attribute='capacity') if lots else 0 %}
+        {{ total_cap if lots else '—' }}
       </div>
     </div>
     <div class="summary-item">
-      <div class="label">Total Capacity</div>
-      <div class="value" id="total-capacity" style="color:var(--accent)">
-        {% set total_cap = lots|sum(attribute='capacity') if lots else 0 %}
-        {{ total_cap if lots else '—' }}
+      <div class="label">Available</div>
+      <div class="value good" id="total-available">
+        {% set total_avail = lots|sum(attribute='available') if lots else 0 %}
+        {{ total_avail if lots else '—' }}
       </div>
     </div>
   </div>
@@ -51,8 +51,8 @@
         <div class="lot-card" data-lot-id="{{ lot.id }}">
           <div class="lot-header">
             <div>
-              <div class="lot-id">{{ lot.id }}</div>
               <div class="lot-name">{{ lot.name }}</div>
+              <div class="lot-id">{{ lot.id }}</div>
             </div>
             <span class="status-chip {{ status }}">{{ 'Full' if status=='full' else 'Busy' if status=='busy' else 'Open' }}</span>
           </div>
@@ -83,8 +83,8 @@
   </div>
 
   <footer>
-    <span>UAH HACKATHON 2026 — PARKING DASHBOARD (Flask Version)</span>
-    <span>Last updated: <span id="last-updated">{{ now }}</span></span>
+    <span>UAH HACKATHON 2026</span>
+    <span>Last updated <span id="last-updated">{{ now }}</span></span>
   </footer>
 
 {% endblock %}
