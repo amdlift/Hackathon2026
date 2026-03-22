@@ -3,3 +3,4 @@ processed_data.json
 __pycache__/
 .vscode/
 instance/
+shell.nix
