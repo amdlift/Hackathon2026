@@ -54,12 +54,16 @@ def seed_lots_command(reset):
 
         # Your known lots — edit names/capacities as needed
         initial_lots = [
+            {"name": "FFH, CTC Lots G9-G16",    "capacity": 750},
+            {"name": "CCH, I2C Lot G5",         "capacity": 500},
             {"name": "Intermodal Facility",     "capacity": 450},
             {"name": "West Lot 27",             "capacity": 300},
             {"name": "East Lot 10",             "capacity": 180},
+            {"name": "OKT Lot T40",             "capacity": 150},
             {"name": "North Lot 5",             "capacity": 120},
             {"name": "South Engineering Lot",   "capacity": 200},
             {"name": "Union Center Lot 3",      "capacity":  90},
+            {"name": "SST West Entrance",       "capacity":   5}, # its 5 i literally counted
         ]
 
         added = 0
