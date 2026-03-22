@@ -3,10 +3,13 @@ from ultralytics import YOLO
 
 model = YOLO("yolov8n.pt")
 
-# SSTL camera settings
 SSTL_CAMERA_INDEX = 1
-SSTL_ROI = (500, 500, 1000, 1000)  # (x1, y1, x2, y2)
+SSTL_ROI = (500, 500, 1000, 1000)
 
+cap = cv2.VideoCapture(SSTL_CAMERA_INDEX)
+
+if not cap.isOpened():
+    print(f"WARNING: Could not open camera at index {SSTL_CAMERA_INDEX}")
 
 def count_cars_in_roi(frame, roi):
     x1, y1, x2, y2 = roi
@@ -24,7 +27,6 @@ def count_cars_in_roi(frame, roi):
     ):
         if int(cls) != 2:
             continue
-
         if float(conf) < 0.5:
             continue
 
@@ -37,19 +39,13 @@ def count_cars_in_roi(frame, roi):
 
     return car_count
 
-
-def get_sstl_count():
-    cap = cv2.VideoCapture(SSTL_CAMERA_INDEX)
+def get_frame():
     ret, frame = cap.read()
-    cap.release()
-
     if not ret:
-        return 0
+        return None
+    return frame
 
-    return count_cars_in_roi(frame, SSTL_ROI)
-
-
-def get_lot_counts():
-    return {
-        "SSTL": get_sstl_count()
-    }
+def get_lot_counts(frame):
+    if frame is None:
+        return {"SSL": 0}
+    return {"SSL": count_cars_in_roi(frame, SSTL_ROI)}

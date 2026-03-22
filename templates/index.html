@@ -1,11 +1,286 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>UAH Parking Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
+  <style>
+    :root {
+      --bg: #0a0e14;
+      --surface: #111720;
+      --border: #1e2a38;
+      --accent: #00c2ff;
+      --accent2: #00ff99;
+      --warn: #ffb347;
+      --danger: #ff4f4f;
+      --text: #e8f0f8;
+      --muted: #4a6070;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,194,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,194,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      padding: 2.5rem 3rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo-block h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      color: var(--accent);
+      text-shadow: 0 0 30px rgba(0,194,255,0.3);
+    }
+
+    .logo-block p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-top: 0.3rem;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent2);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent2);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* Summary bar */
+    .summary {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .summary-item {
+      padding: 1.5rem 3rem;
+      border-right: 1px solid var(--border);
+    }
+
+    .summary-item:last-child { border-right: none; }
+
+    .summary-item .label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .summary-item .value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+
+    .value.good { color: var(--accent2); }
+    .value.warn { color: var(--warn); }
+    .value.bad  { color: var(--danger); }
+
+    /* Lots grid */
+    .lots-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      margin-top: 0;
+    }
+
+    .lot-card {
+      background: var(--surface);
+      padding: 2rem;
+      transition: background 0.2s;
+      cursor: default;
+      animation: fadeIn 0.4s ease both;
+    }
+
+    .lot-card:hover { background: #151e2b; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .lot-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+
+    .lot-id {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .lot-name {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+      font-weight: 300;
+    }
+
+    .status-chip {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.7rem;
+      border-radius: 2px;
+      font-weight: 500;
+    }
+
+    .status-chip.open   { background: rgba(0,255,153,0.1); color: var(--accent2); border: 1px solid rgba(0,255,153,0.2); }
+    .status-chip.busy   { background: rgba(255,179,71,0.1); color: var(--warn);   border: 1px solid rgba(255,179,71,0.2); }
+    .status-chip.full   { background: rgba(255,79,79,0.1);  color: var(--danger); border: 1px solid rgba(255,79,79,0.2); }
+
+    /* Progress bar */
+    .progress-section { margin-bottom: 1.2rem; }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 1s ease;
+    }
+
+    .fill-good   { background: var(--accent2); }
+    .fill-warn   { background: var(--warn); }
+    .fill-danger { background: var(--danger); }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-top: 1.2rem;
+    }
+
+    .stat-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.8rem 1rem;
+    }
+
+    .stat-box .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-box .stat-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 1.5rem 3rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+    }
+
+    #last-updated { color: var(--accent); }
+
+    @media (max-width: 600px) {
+      header { padding: 1.5rem; flex-direction: column; align-items: flex-start; }
+      .summary { grid-template-columns: 1fr; }
+      .summary-item { border-right: none; border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; }
+      .lots-grid { grid-template-columns: 1fr; }
+      .lot-card { padding: 1.5rem; }
+      footer { flex-direction: column; gap: 0.5rem; padding: 1rem 1.5rem; }
+    }
+  </style>
 </head>
 <body>
 
@@ -16,7 +291,7 @@
   </div>
   <div class="live-badge">
     <div class="live-dot"></div>
-    Live Data via Flask API
+    Simulated Live Data
   </div>
 </header>
 
@@ -35,115 +310,101 @@
   </div>
 </div>
 
-<div class="lots-grid" id="lots-grid">
-  <div class="loading">Loading parking data...</div>
-</div>
+<div class="lots-grid" id="lots-grid"></div>
 
 <footer>
-  <span>UAH HACKATHON 2026 &mdash; PARKING DASHBOARD (Flask Version)</span>
+  <span>UAH HACKATHON 2026 &mdash; PARKING DASHBOARD</span>
   <span>Last updated: <span id="last-updated">—</span></span>
 </footer>
 
 <script>
+  function getStatusClass(pct) {
+    if (pct == 100) return "full";
+    else if (pct >= 70) return "busy";
+    return "open";
+  }
+
+  function getStatusLabel(pct) {
+    if (pct == 100) return "Full";
+    if (pct >= 70) return "Busy";
+    return "Open";
+  }
+
   function getFillClass(pct) {
-    if (pct >= 95) return "fill-danger";
+    if (pct == 100) return "fill-danger";
     if (pct >= 70) return "fill-warn";
     return "fill-good";
   }
 
   function getValueClass(pct) {
-    if (pct >= 95) return "bad";
+    if (pct == 100) return "bad";
     if (pct >= 70) return "warn";
     return "good";
   }
 
-  async function fetchParkingData() {
-    const response = await fetch('/api/parking-data');
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  }
-
   async function renderLots() {
+    const res = await fetch("/api/parking-data");
+    const data = await res.json();
+
+    // Update summary
+    document.getElementById("total-lots").textContent = data.summary.total_lots;
+    document.getElementById("total-available").textContent = data.summary.total_available;
+    document.getElementById("total-capacity").textContent = data.summary.total_capacity;
+    document.getElementById("last-updated").textContent = data.summary.last_updated;
+
     const grid = document.getElementById("lots-grid");
 
-    try {
-      const data = await fetchParkingData();
-      const { lots, summary } = data;
+    data.lots.forEach((lot, i) => {
+        const pct = lot.occupancy_pct;
+        const cardId = `lot-card-${lot.lot}`;
 
-      grid.innerHTML = "";
-
-      lots.forEach((lot, i) => {
-        const pct = Math.min(100, Math.max(0, Math.round((lot.percent_full || 0) * 100)));
-
-        const card = document.createElement("div");
-        card.className = "lot-card";
-        card.style.animationDelay = `${i * 0.07}s`;
-
-        const lotName = lot.lot_name || lot.lot_id;
-
-        card.innerHTML = `
-          <div class="lot-header">
-            <div>
-              <div class="lot-id">${lot.lot_id}</div>
-              <div class="lot-name">${lotName}</div>
-            </div>
-            <span class="status-chip">${lot.status}</span>
-          </div>
-
-          <div class="progress-section">
-            <div class="progress-labels">
-              <span>Occupancy</span>
-              <span>${pct}%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill ${getFillClass(pct)}" style="width: ${pct}%"></div>
-            </div>
-          </div>
-
-          <div class="stats-row">
-            <div class="stat-box">
-              <div class="stat-label">Available</div>
-              <div class="stat-value ${getValueClass(pct)}">${lot.available}</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">Max Capacity</div>
-              <div class="stat-value" style="color:var(--accent)">${lot.capacity}</div>
-            </div>
-          </div>
-        `;
-
-        grid.appendChild(card);
-      });
-
-      // Summary (from backend)
-      document.getElementById("total-lots").textContent = summary.total_lots;
-      document.getElementById("total-available").textContent = summary.total_available;
-      document.getElementById("total-capacity").textContent = summary.total_capacity;
-      document.getElementById("last-updated").textContent = summary.last_updated;
-
-    } catch (error) {
-      document.getElementById("lots-grid").innerHTML = `
-        <div class="error">
-          <strong>Error loading parking data:</strong><br>
-          ${error.message}<br>
-          <small>Make sure the Flask server is running.</small>
-        </div>
-      `;
-    }
-  }
+        // If card doesn't exist yet, create it
+        if (!document.getElementById(cardId)) {
+            const card = document.createElement("div");
+            card.className = "lot-card";
+            card.id = cardId;
+            card.style.animationDelay = `${i * 0.07}s`;
+            card.innerHTML = `
+                <div class="lot-header">
+                    <div>
+                        <div class="lot-id">${lot.lot}</div>
+                        <div class="lot-name">${lot.name}</div>
+                    </div>
+                    <span class="status-chip ${getStatusClass(pct)}" id="status-${lot.lot}">${getStatusLabel(pct)}</span>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-labels">
+                        <span>Occupancy</span><span id="pct-${lot.lot}">${pct}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill ${getFillClass(pct)}" id="fill-${lot.lot}" style="width:${pct}%"></div>
+                    </div>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-label">Available</div>
+                        <div class="stat-value ${getValueClass(pct)}" id="avail-${lot.lot}">${lot.available}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Max Capacity</div>
+                        <div class="stat-value" style="color:var(--accent)">${lot.capacity}</div>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        } else {
+            // Card exists — just update the numbers
+            document.getElementById(`pct-${lot.lot}`).textContent = `${pct}%`;
+            document.getElementById(`fill-${lot.lot}`).style.width = `${pct}%`;
+            document.getElementById(`avail-${lot.lot}`).textContent = lot.available;
+            document.getElementById(`status-${lot.lot}`).textContent = getStatusLabel(pct);
+            document.getElementById(`status-${lot.lot}`).className = `status-chip ${getStatusClass(pct)}`;
+        }
+    });
+}
 
   renderLots();
-  setInterval(renderLots, 10000);
-
-  document.addEventListener('keydown', (e) => {
-    if (e.code === 'KeyR' && e.ctrlKey) {
-      e.preventDefault();
-      renderLots();
-    }
-  });
+  setInterval(renderLots, 5000);
 </script>
-
 </body>
 </html>

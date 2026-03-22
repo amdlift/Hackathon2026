@@ -1,6 +1,11 @@
 {
   "parking_lots": [
     {
+      "lot": "SSL",
+      "name": "Shelby Lake Lot",
+      "capacity": 5
+    },
+    {
       "lot": "W27",
       "name": "West Lot 27",
       "capacity": 300

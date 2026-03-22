@@ -54,16 +54,23 @@ def index():
 
 @app.route('/api/parking-data')
 def get_parking_data():
-    """API endpoint to get current parking lot data"""
-    with open('processed_data.json', 'r') as processed_file:
-        lots = json.load(processed_file)
+    with open('processed_data.json', 'r') as f:
+        data = json.load(f)
     
-    # Calculate summary statistics
+    lots = data['parking_lots']
+
+    # map field names for frontend
+    for lot in lots:
+        lot['lot'] = lot['lot_id']
+        lot['name'] = lot['lot_name']
+        lot['occupancy_pct'] = int(lot['percent_full'])
+        lot['status'] = lot['status'].lower()
+
     total_lots = len(lots)
     total_available = sum(lot['available'] for lot in lots)
     total_capacity = sum(lot['capacity'] for lot in lots)
     last_updated = datetime.now().strftime('%H:%M:%S')
-    
+
     return jsonify({
         'lots': lots,
         'summary': {
