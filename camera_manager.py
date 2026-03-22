@@ -4,7 +4,7 @@ from ultralytics import YOLO
 model = YOLO("yolov8n.pt")
 
 SSTL_CAMERA_INDEX = 1
-SSTL_ROI = (500, 500, 1000, 1000)
+SSTL_ROI = (500, 500, 1500, 1000)
 
 cap = cv2.VideoCapture(SSTL_CAMERA_INDEX)
 

@@ -91,8 +91,8 @@ def main():
 
         cv2.imshow("SSL Parking Lot", annotated_frame)
 
-        # Update JSON every 10 seconds
-        if time.time() - last_update >= 10:
+        # Update JSON every 5 seconds
+        if time.time() - last_update >= 5:
             data = update_json({"SSL": smoothed})
             results_processed = process_parking_data(data)
             write_json_atomic("processed_data.json", {"parking_lots": results_processed})
