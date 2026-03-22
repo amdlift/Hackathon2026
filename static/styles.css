@@ -158,7 +158,7 @@ header {
 
 .lot-name {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 2rem;
+  font-size: 1.333rem;
   letter-spacing: 0.08em;
   color: var(--accent);
   line-height: 1;
